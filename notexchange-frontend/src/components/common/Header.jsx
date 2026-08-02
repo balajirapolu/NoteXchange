@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
-import apiClient from '../../api/apiClient';
 import { 
   BookOpen, 
   Upload, 
@@ -10,91 +9,12 @@ import {
   Star, 
   FileText, 
   ChevronDown,
-  Sparkles,
-  Bell,
-  X,
-  MessageSquare,
-  CheckCheck
+  Sparkles
 } from 'lucide-react';
 
-export const Header = ({ activeTab, setActiveTab, searchQuery, setSearchQuery, onOpenUpload, onOpenDoubtForNote }) => {
+export const Header = ({ activeTab, setActiveTab, searchQuery, setSearchQuery, onOpenUpload }) => {
   const { user, isAuthenticated, logout, openAuthModal } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const notifRef = useRef(null);
-
-  // Fetch notifications every 30 seconds when authenticated
-  useEffect(() => {
-    if (!isAuthenticated) {
-      setNotifications([]);
-      setUnreadCount(0);
-      return;
-    }
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 30000);
-    return () => clearInterval(interval);
-  }, [isAuthenticated]);
-
-  // Close notification panel on outside click
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (notifRef.current && !notifRef.current.contains(e.target)) {
-        setIsNotifOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  const fetchNotifications = async () => {
-    try {
-      const [notifRes, countRes] = await Promise.all([
-        apiClient.get('/notifications'),
-        apiClient.get('/notifications/unread-count')
-      ]);
-      setNotifications(notifRes.data || []);
-      setUnreadCount(countRes.data?.count || 0);
-    } catch (err) {
-      // Silently fail – backend may not be reachable
-    }
-  };
-
-  const handleMarkAllRead = async () => {
-    try {
-      await apiClient.put('/notifications/read-all');
-      setUnreadCount(0);
-      setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-    } catch (err) {}
-  };
-
-  const handleNotifClick = async (notif) => {
-    // Mark individual notification as read
-    if (!notif.isRead) {
-      try {
-        await apiClient.put(`/notifications/${notif.id}/read`);
-        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, isRead: true } : n));
-        setUnreadCount(prev => Math.max(0, prev - 1));
-      } catch (err) {}
-    }
-    // Open the Doubt Modal for that note if handler is provided
-    if (notif.noteId && onOpenDoubtForNote) {
-      onOpenDoubtForNote(notif.noteId);
-    }
-    setIsNotifOpen(false);
-  };
-
-  const formatTime = (dateStr) => {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    const now = new Date();
-    const diff = Math.floor((now - d) / 1000);
-    if (diff < 60) return 'just now';
-    if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
-    if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
-    return `${Math.floor(diff / 86400)}d ago`;
-  };
 
   return (
     <header className="bg-navy-main text-white sticky top-0 z-40 shadow-md border-b border-navy-card">
@@ -179,112 +99,6 @@ export const Header = ({ activeTab, setActiveTab, searchQuery, setSearchQuery, o
               <span className="hidden sm:inline">Upload Note</span>
               <span className="sm:hidden">Upload</span>
             </button>
-
-            {/* Notification Bell — only when authenticated */}
-            {isAuthenticated && (
-              <div className="relative" ref={notifRef}>
-                <button
-                  onClick={async () => {
-                    const opening = !isNotifOpen;
-                    setIsNotifOpen(opening);
-                    if (opening && unreadCount > 0) {
-                      // Immediately clear the badge when panel is opened
-                      try {
-                        await apiClient.put('/notifications/read-all');
-                        setUnreadCount(0);
-                        setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-                      } catch (err) {}
-                    }
-                  }}
-                  className="relative w-9 h-9 rounded-xl bg-navy-card hover:bg-sky-900/40 flex items-center justify-center border border-sky-800/50 transition-all"
-                  title="Notifications"
-                >
-                  <Bell className="w-4 h-4 text-sky-200" />
-                  {unreadCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-red-500 text-white text-[10px] font-black flex items-center justify-center shadow-md animate-pulse">
-                      {unreadCount > 9 ? '9+' : unreadCount}
-                    </span>
-                  )}
-                </button>
-
-                {/* Notification Dropdown */}
-                {isNotifOpen && (
-                  <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl shadow-2xl border border-sky-100 z-50 overflow-hidden animate-fade-in">
-                    {/* Header */}
-                    <div className="flex items-center justify-between px-4 py-3 bg-navy-main border-b border-navy-card">
-                      <span className="text-xs font-extrabold text-white flex items-center gap-2">
-                        <Bell className="w-3.5 h-3.5 text-teal-main" />
-                        Notifications
-                        {unreadCount > 0 && (
-                          <span className="bg-red-500 text-white text-[9px] px-1.5 py-0.5 rounded-full font-black">
-                            {unreadCount} new
-                          </span>
-                        )}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {unreadCount > 0 && (
-                          <button
-                            onClick={handleMarkAllRead}
-                            className="text-[10px] text-teal-main hover:text-white font-semibold flex items-center gap-1 transition-colors"
-                            title="Mark all as read"
-                          >
-                            <CheckCheck className="w-3 h-3" />
-                            All read
-                          </button>
-                        )}
-                        <button onClick={() => setIsNotifOpen(false)} className="text-sky-300 hover:text-white">
-                          <X className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Notification List */}
-                    <div className="max-h-80 overflow-y-auto">
-                      {notifications.length === 0 ? (
-                        <div className="py-8 text-center">
-                          <Bell className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-                          <p className="text-xs text-slate-500 font-medium">No notifications yet</p>
-                          <p className="text-[10px] text-slate-400 mt-0.5">You'll be notified about doubts and replies</p>
-                        </div>
-                      ) : (
-                        notifications.map(notif => (
-                          <button
-                            key={notif.id}
-                            onClick={() => handleNotifClick(notif)}
-                            className={`w-full text-left px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors flex items-start gap-3 ${
-                              !notif.isRead ? 'bg-teal-50/50' : ''
-                            }`}
-                          >
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 text-xs font-bold mt-0.5 ${
-                              !notif.isRead ? 'bg-teal-main text-white' : 'bg-slate-200 text-slate-600'
-                            }`}>
-                              {notif.actorName ? notif.actorName.charAt(0).toUpperCase() : '?'}
-                            </div>
-                            <div className="flex-grow min-w-0">
-                              <p className={`text-xs leading-relaxed ${!notif.isRead ? 'font-semibold text-navy-main' : 'font-normal text-slate-600'}`}>
-                                {notif.message}
-                              </p>
-                              <div className="flex items-center gap-1.5 mt-1">
-                                <span className="text-[10px] text-slate-400">{formatTime(notif.createdAt)}</span>
-                                {notif.noteId && (
-                                  <span className="text-[10px] text-teal-main flex items-center gap-0.5 font-medium">
-                                    <MessageSquare className="w-2.5 h-2.5" />
-                                    View Thread
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {!notif.isRead && (
-                              <div className="w-2 h-2 rounded-full bg-teal-main shrink-0 mt-2"></div>
-                            )}
-                          </button>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-            )}
 
             {/* Auth / User Section */}
             {isAuthenticated ? (
