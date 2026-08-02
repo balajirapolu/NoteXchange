@@ -26,6 +26,8 @@ function MainAppContent() {
   const [ratingTargetNote, setRatingTargetNote] = useState(null);
   const [pdfTargetNote, setPdfTargetNote] = useState(null);
   const [doubtTargetNote, setDoubtTargetNote] = useState(null);
+  // Track which note doubt threads the user has already opened this session
+  const [viewedNoteIds, setViewedNoteIds] = useState(new Set());
   
   const [showFullAuthPage, setShowFullAuthPage] = useState(false);
 
@@ -172,7 +174,12 @@ function MainAppContent() {
               setRatingTargetNote(note);
             }
           }}
-          onOpenDoubts={(note) => setDoubtTargetNote(note)}
+          onOpenDoubts={(note) => {
+            setDoubtTargetNote(note);
+            // Mark this note as viewed so the badge disappears
+            setViewedNoteIds(prev => new Set([...prev, note.id]));
+          }}
+          viewedNoteIds={viewedNoteIds}
           onDelete={handleDeleteNote}
           onOpenUpload={() => {
             if (!isAuthenticated) {

@@ -2,7 +2,7 @@ import React from 'react';
 import { Star, FileText, Download, Eye, User, Trash2, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-export const NoteCard = ({ note, onViewPdf, onRate, onOpenDoubts, onDelete }) => {
+export const NoteCard = ({ note, onViewPdf, onRate, onOpenDoubts, onDelete, hasViewedDoubts }) => {
   const { user } = useAuth();
   const isOwner = user && note.uploaderName && user.name && note.uploaderName.toLowerCase() === user.name.toLowerCase();
 
@@ -91,7 +91,7 @@ export const NoteCard = ({ note, onViewPdf, onRate, onOpenDoubts, onDelete }) =>
             title="Doubt Threads & Discussion"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            {note.commentCount > 0 && (
+            {!hasViewedDoubts && note.commentCount > 0 && (
               <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
                 {note.commentCount > 9 ? '9+' : note.commentCount}
               </span>

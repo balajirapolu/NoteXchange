@@ -15,7 +15,8 @@ export const NoteList = ({
   onRate,
   onOpenDoubts,
   onDelete,
-  onOpenUpload
+  onOpenUpload,
+  viewedNoteIds
 }) => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -131,6 +132,7 @@ export const NoteList = ({
               onRate={onRate}
               onOpenDoubts={onOpenDoubts}
               onDelete={onDelete}
+              hasViewedDoubts={viewedNoteIds && viewedNoteIds.has(note.id)}
             />
           ))}
         </div>
