@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@layer base {
+  body {
+    background-color: #ffffff;
+    color: #0f2c59;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Custom Palette Utility Shortcuts */
+.bg-navy-main {
+  background-color: #0f2c59;
+}
+.bg-navy-dark {
+  background-color: #0a192f;
+}
+.bg-navy-card {
+  background-color: #16376b;
+}
+.text-navy-main {
+  color: #0f2c59;
+}
+
+.bg-teal-main {
+  background-color: #009688;
+}
+.bg-teal-hover:hover {
+  background-color: #00796b;
+}
+.text-teal-main {
+  color: #009688;
+}
+.border-teal-main {
+  border-color: #009688;
+}
+
+.bg-light-blue {
+  background-color: #e0f2fe;
+}
+.bg-light-blue-soft {
+  background-color: #f0f9ff;
+}
+.text-light-blue-dark {
+  color: #0369a1;
+}
+.border-light-blue {
+  border-color: #bae6fd;
+}
+
+/* Custom Animations & Transitions */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.25s ease-out forwards;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f0f9ff;
+}
+::-webkit-scrollbar-thumb {
+  background: #bae6fd;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #009688;
+}

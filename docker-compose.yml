@@ -1,0 +1,27 @@
+services:
+  backend:
+    build:
+      context: ./notexchange
+      dockerfile: Dockerfile
+    container_name: notexchange-backend
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://host.docker.internal:3306/notexchange?allowPublicKeyRetrieval=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 06061980@Dad
+      JWT_SECRET: MySuperSecretKeyForNoteXchangeApp2026SecureKey!
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  frontend:
+    build:
+      context: ./notexchange-frontend
+      dockerfile: Dockerfile
+    container_name: notexchange-frontend
+    restart: always
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend

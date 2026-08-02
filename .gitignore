@@ -1,0 +1,23 @@
+# Node & Frontend dependencies
+node_modules/
+notexchange-frontend/node_modules/
+notexchange-frontend/dist/
+notexchange-frontend/.env.local
+
+# Maven & Java build targets
+target/
+notexchange/target/
+*.class
+*.jar
+*.war
+
+# IDE & OS configuration
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+*.log
+
+# Docker temporary / volumes data
+.docker/
