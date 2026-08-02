@@ -1,8 +1,8 @@
 import React from 'react';
-import { Star, FileText, Download, Eye, User, Trash2 } from 'lucide-react';
+import { Star, FileText, Download, Eye, User, Trash2, MessageSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
-export const NoteCard = ({ note, onViewPdf, onRate, onDelete }) => {
+export const NoteCard = ({ note, onViewPdf, onRate, onOpenDoubts, onDelete }) => {
   const { user } = useAuth();
   const isOwner = user && note.uploaderName && user.name && note.uploaderName.toLowerCase() === user.name.toLowerCase();
 
@@ -61,12 +61,12 @@ export const NoteCard = ({ note, onViewPdf, onRate, onDelete }) => {
 
       </div>
 
-      {/* Card Action Buttons (View PDF, Download, Rate, Delete) */}
-      <div className="bg-light-blue-soft p-3.5 border-t border-sky-100 flex items-center justify-between gap-2">
+      {/* Card Action Buttons (View PDF, Download, Doubts, Rate, Delete) */}
+      <div className="bg-light-blue-soft p-3.5 border-t border-sky-100 flex items-center justify-between gap-1.5">
         
         <button
           onClick={() => onViewPdf(note)}
-          className="flex-1 bg-white hover:bg-navy-main text-navy-main hover:text-white border border-sky-200 hover:border-navy-main px-2.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs"
+          className="flex-1 bg-white hover:bg-navy-main text-navy-main hover:text-white border border-sky-200 hover:border-navy-main px-2 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs"
         >
           <Eye className="w-3.5 h-3.5" />
           View
@@ -77,12 +77,22 @@ export const NoteCard = ({ note, onViewPdf, onRate, onDelete }) => {
           download
           target="_blank"
           rel="noopener noreferrer"
-          className="bg-teal-main hover:bg-[#00796b] text-white px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs"
+          className="bg-teal-main hover:bg-[#00796b] text-white px-2.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-xs"
           title="Download PDF File"
         >
           <Download className="w-3.5 h-3.5" />
-          Download
+          PDF
         </a>
+
+        {onOpenDoubts && (
+          <button
+            onClick={() => onOpenDoubts(note)}
+            className="bg-white hover:bg-teal-main text-teal-main hover:text-white border border-teal-200 p-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+            title="Doubt Threads & Discussion"
+          >
+            <MessageSquare className="w-3.5 h-3.5" />
+          </button>
+        )}
 
         <button
           onClick={() => onRate(note)}

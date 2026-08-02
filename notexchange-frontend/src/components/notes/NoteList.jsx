@@ -13,6 +13,7 @@ export const NoteList = ({
   setSelectedSemester,
   onViewPdf, 
   onRate,
+  onOpenDoubts,
   onDelete,
   onOpenUpload
 }) => {
@@ -128,6 +129,7 @@ export const NoteList = ({
               note={note}
               onViewPdf={onViewPdf}
               onRate={onRate}
+              onOpenDoubts={onOpenDoubts}
               onDelete={onDelete}
             />
           ))}

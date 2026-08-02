@@ -9,6 +9,7 @@ import { AuthModal } from './components/auth/AuthModal';
 import { UploadModal } from './components/notes/UploadModal';
 import { RatingModal } from './components/notes/RatingModal';
 import { PdfViewerModal } from './components/notes/PdfViewerModal';
+import { DoubtModal } from './components/notes/DoubtModal';
 import { INITIAL_MOCK_NOTES } from './data/mockNotes';
 import apiClient from './api/apiClient';
 
@@ -24,6 +25,7 @@ function MainAppContent() {
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [ratingTargetNote, setRatingTargetNote] = useState(null);
   const [pdfTargetNote, setPdfTargetNote] = useState(null);
+  const [doubtTargetNote, setDoubtTargetNote] = useState(null);
   
   const [showFullAuthPage, setShowFullAuthPage] = useState(false);
 
@@ -170,6 +172,7 @@ function MainAppContent() {
               setRatingTargetNote(note);
             }
           }}
+          onOpenDoubts={(note) => setDoubtTargetNote(note)}
           onDelete={handleDeleteNote}
           onOpenUpload={() => {
             if (!isAuthenticated) {
@@ -204,6 +207,12 @@ function MainAppContent() {
         isOpen={!!pdfTargetNote}
         note={pdfTargetNote}
         onClose={() => setPdfTargetNote(null)}
+      />
+
+      <DoubtModal
+        isOpen={!!doubtTargetNote}
+        note={doubtTargetNote}
+        onClose={() => setDoubtTargetNote(null)}
       />
 
     </div>
