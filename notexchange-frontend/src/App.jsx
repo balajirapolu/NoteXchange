@@ -144,6 +144,10 @@ function MainAppContent() {
             setIsUploadOpen(true);
           }
         }}
+        onOpenDoubtForNote={(noteId) => {
+          const note = notes.find(n => n.id === noteId);
+          if (note) setDoubtTargetNote(note);
+        }}
       />
 
       {/* Main Container */}

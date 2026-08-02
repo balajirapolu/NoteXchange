@@ -87,10 +87,15 @@ export const NoteCard = ({ note, onViewPdf, onRate, onOpenDoubts, onDelete }) =>
         {onOpenDoubts && (
           <button
             onClick={() => onOpenDoubts(note)}
-            className="bg-white hover:bg-teal-main text-teal-main hover:text-white border border-teal-200 p-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1"
+            className="relative bg-white hover:bg-teal-main text-teal-main hover:text-white border border-teal-200 p-2 rounded-xl text-xs font-bold transition-all shadow-xs flex items-center gap-1"
             title="Doubt Threads & Discussion"
           >
             <MessageSquare className="w-3.5 h-3.5" />
+            {note.commentCount > 0 && (
+              <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center">
+                {note.commentCount > 9 ? '9+' : note.commentCount}
+              </span>
+            )}
           </button>
         )}
 

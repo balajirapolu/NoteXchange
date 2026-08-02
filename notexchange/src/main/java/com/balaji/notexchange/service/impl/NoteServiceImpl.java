@@ -4,6 +4,7 @@ import com.balaji.notexchange.dto.note.NoteResponse;
 import com.balaji.notexchange.entity.Note;
 import com.balaji.notexchange.entity.User;
 import com.balaji.notexchange.exception.ResourceNotFoundException;
+import com.balaji.notexchange.repository.CommentRepository;
 import com.balaji.notexchange.repository.NoteRepository;
 import com.balaji.notexchange.repository.UserRepository;
 import com.balaji.notexchange.service.NoteService;
@@ -23,6 +24,7 @@ public class NoteServiceImpl implements NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
 
     private User getCurrentUser() {
 
@@ -142,6 +144,8 @@ public class NoteServiceImpl implements NoteService {
             fileUrl = "http://localhost:8080/api/notes/" + note.getId() + "/file";
         }
 
+        long commentCount = commentRepository.countByNote(note);
+
         return NoteResponse.builder()
                 .id(note.getId())
                 .title(note.getTitle())
@@ -150,6 +154,7 @@ public class NoteServiceImpl implements NoteService {
                 .fileUrl(fileUrl)
                 .avgRating(note.getAvgRating())
                 .uploaderName(note.getUploader() != null ? note.getUploader().getName() : "Anonymous")
+                .commentCount(commentCount)
                 .build();
     }
 }

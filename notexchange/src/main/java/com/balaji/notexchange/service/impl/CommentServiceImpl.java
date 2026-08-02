@@ -11,6 +11,7 @@ import com.balaji.notexchange.repository.CommentRepository;
 import com.balaji.notexchange.repository.NoteRepository;
 import com.balaji.notexchange.repository.UserRepository;
 import com.balaji.notexchange.service.CommentService;
+import com.balaji.notexchange.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     private User getCurrentUser() {
         String email = SecurityContextHolder.getContext()
@@ -40,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         Note note = noteRepository.findById(noteId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note not found"));
 
-        User user = getCurrentUser();
+        User actor = getCurrentUser();
 
         Comment parent = null;
         if (request.getParentId() != null) {
@@ -55,11 +57,36 @@ public class CommentServiceImpl implements CommentService {
         Comment comment = Comment.builder()
                 .content(request.getContent())
                 .note(note)
-                .user(user)
+                .user(actor)
                 .parent(parent)
                 .build();
 
         comment = commentRepository.save(comment);
+
+        // --- Notification Logic ---
+        if (parent == null) {
+            // Top-level doubt: Notify the note uploader (if they are not the one commenting)
+            User noteOwner = note.getUploader();
+            if (noteOwner != null && !noteOwner.getId().equals(actor.getId())) {
+                notificationService.createNotification(
+                        noteOwner,
+                        actor.getName(),
+                        actor.getName() + " asked a doubt on your note \"" + note.getTitle() + "\"",
+                        note.getId()
+                );
+            }
+        } else {
+            // Reply: Notify the parent comment author (if they are not the one replying)
+            User parentAuthor = parent.getUser();
+            if (parentAuthor != null && !parentAuthor.getId().equals(actor.getId())) {
+                notificationService.createNotification(
+                        parentAuthor,
+                        actor.getName(),
+                        actor.getName() + " replied to your doubt on \"" + note.getTitle() + "\"",
+                        note.getId()
+                );
+            }
+        }
 
         return mapToResponse(comment);
     }

@@ -20,4 +20,6 @@ public class NoteResponse {
     private Double avgRating;
 
     private String uploaderName;
-}
+
+    private Long commentCount;
+}
